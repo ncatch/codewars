@@ -1,3 +1,6 @@
+// https://www.codewars.com/kata/534e01fbbb17187c7e0000c6
+// 已解决
+
 const directionDic = {
 	left: 1,
 	top: 2,
