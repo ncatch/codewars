@@ -18,88 +18,14 @@ const dic = {
 	'RB': 'G'
 }
 
-const dic3 = {
-	"RRR": "R",
-	"RRG": "B",
-	"RRB": "G",
-	"RGR": "B",
-	"RGG": "R",
-	"RGB": "G",
-	"RBR": "G",
-	"RBG": "B",
-	"RBB": "R",
-	"GRR": "G",
-	"GRG": "B",
-	"GRB": "R",
-	"GGR": "R",
-	"GGG": "G",
-	"GGB": "R",
-	"GBR": "B",
-	"GBG": "R",
-	"GBB": "G",
-	"BRR": "B",
-	"BRG": "R",
-	"BRB": "G",
-	"BGR": "G",
-	"BGG": "B",
-	"BGB": "R",
-	"BBR": "R",
-	"BBG": "G",
-	"BBB": "B"
-}
-
-function triangle(row) {
-	// Return the answer
-	if (row.length <= 1) return row;
-
-	let result = '';
-
-	for (let index = 0; index < row.length - 1; index++) {
-		result += dic[row[index] + row[index + 1]];
-	}
-
-	return triangle(result);
-}
-
-function triangle2 (row) {
-	console.log(row)
-	if (row.length === 3) return dic3[row];
-	if (row.length === 2) return dic[row];
-	if (row.length <=1) return row;
-	
-	let result = '';
-
-	for (let index = 1; index < row.length - 1; index++) {
-		result += dic3[row[index - 1] + row[index] + row[index + 1]];
-	}
-
-	return triangle2(result);
-}
-
-
-console.log(triangle2('RBRGBRBGGRRRBGBBBGG'));
-
-function renderTestData () {
-	const tmp = {
-		1: 'R',
-		2: 'G',
-		3: 'B',
-	}
-
-	let result = new Array(100).fill('').map(() => tmp[parseInt(3*Math.random())+1]);
-	
-	console.log(result.join(''));
-}
-
-// renderTestData();
-
 // R B R G B R B B
 //  G G B R G G B
 //   G R G B G R
-//    B B R R B
+//    B B R R B   节点
 //     B G R G
 //      R B B
 //       G B
+//        R
 
 
 // R : 0
@@ -118,3 +44,58 @@ function renderTestData () {
 
 // R B R G B R B G G R R R B G B B B G G
 // 0 2 0 1 2 0 2 1 1 0 0 0 2 1 2 2 2 1 1
+
+
+
+
+function rule(a, b) {
+	if (a == b) {
+		return a;
+	}
+	if (a != 'R' && b != 'R') {
+		return 'R';
+	}
+	if (a != 'G' && b != 'G') {
+		return 'G';
+	}
+	if (a != 'B' && b != 'B') {
+		return 'B';
+	}
+	return "";
+}
+
+function reduceSimple(row) {
+	var retval = "";
+	for (var i = 0; i < row.length - 1; ++i) {
+		retval += rule(row[i], row[i + 1]);
+	}
+	return retval;
+}
+
+function reduce(row) {
+	var windowsize = 1;
+	while (windowsize * 3 + 1 < row.length) {
+		windowsize = windowsize * 3;
+	}
+	if (windowsize == 1) {
+		var retval = reduceSimple(row);
+		return retval;
+	}
+	var retval = "";
+	for (var x = 0; x < row.length - windowsize; ++x) {
+		retval += rule(row[x], row[x + windowsize]);
+	}
+	return retval;
+}
+
+function triangle(row) {
+	while (row.length > 1) {
+		row = reduce(row);
+	}
+	return row;
+}
+
+console.log(triangle('RBRGBRBGGRRRBGB'));
+
+// R B R G B R B G G R R R B G B B B G G
+//
