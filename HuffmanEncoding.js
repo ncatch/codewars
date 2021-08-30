@@ -1,5 +1,5 @@
 // https://www.codewars.com/kata/54cf7f926b85dcc4e2000d9d/train/javascript
-
+// 已解决
 
 // takes: String; returns: [ [String,Int] ] (Strings in return value are single characters)
 function frequencies(s) {
