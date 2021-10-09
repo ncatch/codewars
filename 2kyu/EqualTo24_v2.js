@@ -5,75 +5,58 @@
  * 运算符 3
  * 括号 4
  */
+//  set_time_limit(0); 
+const $values = [5, 5, 5, 1];
+const $result = 24;
+const $list = [];
 
-const operator = ['+', '-', '*', '/'];
-const bracketsDic = [
-	'(a{0}b){1}c{2}d',
-	'(a{0}b{1}c){2}d',
-	'a{0}(b{1}c){2}d',
-	'a{0}(b{1}c{2}d)',
-	'a{0}(b{1}(c{2}d))',
-	'a{0}b{1}(c{2}d)',
-	'(a{0}b){1}(c{2}d)',
-]
+makeValue($values);
+console.log($list);
 
-function equalTo24(a, b, c, d) {
-	const base = ['a', 'b', 'c', 'd'];
-
-	let result = [
-		base
-	];
-
-	for (let i = 1; i < base.length; i++) {
-		result[i] = [];
-
-		for (let n = 0; n < operator.length; n++) {
-			const pre = result[i - 1];
-
-			pre.forEach(ele => {
-				const used = ele.split('');
-				const usable = base.filter(b => !used.find(use => use == b));
-
-				usable.forEach(u => {
-					result[i].push(ele + operator[n] + u);
-				})
-			});
-		}
+function makeValue($values, $set = []) {
+	const $words = ["+", "-", "*", "/"];
+	if ($values.length == 1) {
+		$set.push($values.unshift())
+		return makeSpecial($set);
 	}
 
-	let tmpArr = [];
+	$values.forEach(($value, index) => {
+		const $tmpValues = $values;
+		$tmpValues.splice(index, 1)
 
-	result[result.length - 1].forEach((ele, index) => {
-		return bracketsDic.find(e => {
-			const tmp = ele.split('');
-			const str = e.replace('{0}', tmp[1])
-				.replace('{1}', tmp[3])
-				.replace('{2}', tmp[5]);
-
-			tmpArr.push(str)
-		})
-	})
-
-
-	const fs = require('fs');
-
-	function handlerStr(str) {
-		return str
-		.replace('a', a)
-		.replace('b', b)
-		.replace('c', c)
-		.replace('d', d)
-	}
-	
-	fs.writeFile('d:/tmp.txt', JSON.stringify(result[3].concat(tmpArr).map(ele => 'if (eval(\'' + ele + '\') == 24) return handlerStr(\'' + ele + '\');').join('')), function (error) {
-		if (error) {
-		  console.log('写入失败')
-		} else {
-		  console.log('写入成功了')
-		}
-	})
+		$words.forEach($word => {
+			makeValue($tmpValues, $set.concat($value, $word));
+		});
+	});
 }
 
-// 2*(13-(7/7))
-console.log(equalTo24(2, 3, 4, 5))
+function makeSpecial($set) {
+	const $size = $set.length;
+	if ($size <= 3 || !$set.includes("/") && !$set.includes("*")) {
+		return makeResult($set);
+	}
+	for (let $len = 3; $len < $size - 1; $len += 2) {
+		for (let $start = 0; $start < $size - 1; $start += 2) {
+			if (!($set[$start - 1] == "*" || $set[$start - 1] == "/" || $set[$start + $len] == "*" || $set[$start + $len] == "/"))
+				continue;
+			const $subSet = $set.slice($start, $len);
+			if (!$subSet.includes("+") && !$subSet.includes("-"))
+				continue;
+			let $tmpSet = $set;
+			$tmpSet.splice($start, $len - 1);
+			$tmpSet[$start] = "(" + $subSet.join('') + ")";
+			makeSpecial($tmpSet);
+		}
+	}
+}
 
+function makeResult($set) {
+	const $str = $set.join("");
+
+	console.log($str)
+
+	$num = eval($str);
+
+	if ($num == $result && !$list.filter(ele => $str.includes(ele)).length)
+		$list = $str;
+}
