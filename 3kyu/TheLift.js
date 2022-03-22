@@ -4,11 +4,12 @@
 
 // TODO 包含上下待处理
 var theLift = function (queues, capacity) {
+	console.log(queues, capacity)
 	let isUp = true; // 电梯是否向上
-	let current = 1; // 当前楼层
+	let current = 0; // 当前楼层
 
 	// 在哪些楼层停靠了
-	const result = [0];
+	const result = [];
 	// 当前电梯中要去的楼层
 	let toLevel = [];
 
@@ -61,6 +62,9 @@ var theLift = function (queues, capacity) {
 	if (result[result.length - 1] != 0) {
 		result.push(0)
 	}
+	if (result[0] != 0) {
+		result.unshift(0)
+	}
 
 	return result;
 }
@@ -68,11 +72,11 @@ var theLift = function (queues, capacity) {
 
 
 theLift([
-	[], // G
-	[], // 1
-	[5, 1], // 2
-	[], // 3
-	[], // 4
-	[], // 5
-	[], // 6
-], 5)
+	[],
+	[],
+	[4, 4, 4, 4],
+	[],
+	[2, 2, 2, 2],
+	[],
+	[]
+], 2)

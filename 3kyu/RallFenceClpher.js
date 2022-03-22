@@ -87,7 +87,13 @@ function decodeRailFenceCipher(string, numberRails) {
 
 
 // WEAREDISCOVEREDFLEEATONCE
-console.log(decodeRailFenceCipher(" uriisndeiatDeeruaeoc iiuiieup cs siepntme!n cnfteoiouau p,riqf mfxsuioetaoqi  sanioAP o !  nie  nrl  otsiaeeil x!milvpma   mr  sd ,trmernfatc inttetir ta suiaeed  mktaritr veear ipgucs treu si i.venV  jeeuaeembrupaiotea d ea  itsdisosiostru em", 49))
+// console.log(decodeRailFenceCipher(" vaeegVlr tdqemr  ,xa ci osooieaica erueteuse eueiniod ios asresaqeice i stvsi naep undite lvinmporciatmiAisueir P mn irfe .r tmism iruioeiit nfitmenu ipkeaeet sri  o rf   tbre iutaaapunueaes ,atiast usostpnu!oroei x m pnimD! !ju artflced  tdt", 49))
+
+var str = 'pt  i poaitvrcar emua talmnejA euue sqcuferea iaier!d e usraimn ii.sesetemaesbur t arnip umauiiit  !pVeod ei Donacxio,nedtrsv,otd t iiiaamrmtrlgpnt ducu!o ts i tnste resme  iqko tteiuises aeo aie eceosntfsvfmifeu   rin saooe lrp P ii nurxii e i';
+
+var enCode = encodeRailFenceCipher(str, 13)
+console.log(enCode)
+console.log(decodeRailFenceCipher(enCode, 13))
 
 
 // WIREEEDSEEEACAECVDLTNROFO
