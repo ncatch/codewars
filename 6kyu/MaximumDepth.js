@@ -5,6 +5,7 @@
  * @LastEditTime: 2021-07-12 17:18:01
  * @LastEditors: Walker
  */
+// 已解决
 
 function getNext(arr, start) {
 	const tmp = arr[start] - 1;

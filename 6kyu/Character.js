@@ -1,5 +1,5 @@
 // https://www.codewars.com/kata/586d6cefbcc21eed7a001155/train/javascript
-
+// 已解决
 
 function longestRepetition(s) {
 	let tmp = {}

@@ -1,4 +1,5 @@
 // https://www.codewars.com/kata/54dc6f5a224c26032800005c/train/javascript
+// 已解决
 
 // b = ["ABAR 200", "CDXE 500", "BKWR 250", "BTSQ 890", "DRTY 600"]
 // c = ["A", "B"]

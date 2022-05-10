@@ -1,4 +1,5 @@
 // https://www.codewars.com/kata/58e61f3d8ff24f774400002c
+// 已解决
 
 // mov x, y - 将 y（整数或寄存器的值）复制到寄存器 x 中。
 // inc x - 将寄存器 x 的内容加一。
