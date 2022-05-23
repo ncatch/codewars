@@ -4,7 +4,7 @@
 function SQL() {
 	this.selectFunc = null;
 	this.data = null;
-	this.whereFunc = null
+	this.whereFunc = null;
 	this.orderFunc = null;
 	this.groupArg = null;
 	this.havingFunc = null;
