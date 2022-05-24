@@ -5,6 +5,8 @@
  * @LastEditTime: 2021-05-24 14:22:42
  * @LastEditors: Walker
  */
+// 已解决
+
 function VigenèreCipher(key, abc) {
 	this.encode = function (str) {
 		const tmp = str.split('')

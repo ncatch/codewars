@@ -1,4 +1,5 @@
 // https://www.codewars.com/kata/58e24788e24ddee28e000053/train/javascript
+// 已解决
 
 // mov x y- 将y（常量值或寄存器的内容）复制到寄存器中x
 // inc x- 将寄存器的内容x加一
