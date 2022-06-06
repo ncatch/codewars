@@ -1,10 +1,4 @@
-/*
- * @Description: https://www.codewars.com/kata/582c1092306063791c000c00/train/javascript
- * @Author: Walker
- * @Date: 2021-06-11 17:22:09
- * @LastEditTime: 2021-06-11 17:24:35
- * @LastEditors: Walker
- */
+// https://www.codewars.com/kata/582c1092306063791c000c00/train/javascript
 
 // 未解决
 

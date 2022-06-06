@@ -218,10 +218,9 @@ function solveMine(map, n) {
 		solveCount += mineHelper.handlerAll();
 
 		if (!solveCount) {
-			const tmpMap = mineHelper.getMinesMap();
+			let tmpMap = mineHelper.getMinesMap();
 			const passed = [];
 
-			
 			let isNext = true;
 
 			do {
@@ -265,7 +264,7 @@ function solveMine(map, n) {
 
 					if (next) {
 						if (tmpMap[tmp[0] - 2][tmp[1] + 1] == 1) {
-							const tmpVal = tmpMap[tmp[0] - 1][tmp[1] + 1];
+							tmpVal = tmpMap[tmp[0] - 1][tmp[1] + 1];
 						}
 					}
 				}
@@ -277,8 +276,6 @@ function solveMine(map, n) {
 					mineHelper.map[tmp[0]][tmp[1]] = 'x';
 					solveCount++;
 				}
-
-				// TODO  排除  1-2-1  1-2-2-1
 
 				/**
 				 * 左上角一定不是雷
@@ -292,7 +289,7 @@ function solveMine(map, n) {
 				 * [-1, -1], [0, -1], [-1, 0]
 				 */
 
-				 [
+				[
 					[[1, 1], [2, 1], [1, 2]],
 					[[1, -1], [2, 1], [1, -2]],
 					[[-1, 1], [1, 2], [-2, 1]],
@@ -308,6 +305,8 @@ function solveMine(map, n) {
 					}
 				})
 			} while (isNext);
+
+			// TODO  排除  1-2-1  1-2-2-1
 		}
 
 		if (!solveCount) {
