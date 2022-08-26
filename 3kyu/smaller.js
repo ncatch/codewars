@@ -2,23 +2,6 @@
 // https://www.codewars.com/kata/56a1c63f3bc6827e13000006/train/javascript
 
 
-function smallerA(arr) {
-	const result = [];
-	const tmp = {};
-	for (let index = 0; index < arr.length; index++) {
-		let num = 0;
-		tmp[index] = arr[index];
-		
-		for (let n = index + 1; n < arr.length; n++) {
-			(tmp[index] > (tmp[n] || arr[n])) && num++;
-		}
-		
-		result.push(num);
-	}
-
-	return result
-}
-
 /**
  * 生成测试数据
  * @param {Number} len 
@@ -38,31 +21,23 @@ for (let index = 0; index < 100; index++) {
 
 
 // 右边有多少个数比他小
-function smaller (arr) {
-	var cache = {};
+// function smaller (arr) {
+// 	const result = [];
+// 	const tmp = {};
+// 	for (let index = 0; index < arr.length; index++) {
+// 		let num = 0;
+// 		tmp[index] = arr[index];
+		
+// 		for (let n = index + 1; n < arr.length; n++) {
+// 			(tmp[index] > (tmp[n] || arr[n])) && num++;
+// 		}
+		
+// 		result.push(num);
+// 	}
 
-	return arr.reverse().map((ele, index) => {
-		let result = 0;
-		let cacheTmp = 0;
+// 	return result
+// }
 
-		var tmp = Object.keys(cache).reverse();
-		for (let index = 0; index < tmp.length; index++) {
-			const element = tmp[index];
 
-			if (element == ele) {
-				cacheTmp = cache[element] + 1;
-				result = cache[element];
-				break;
-			} else if (ele > element) {
-				cacheTmp = cache[element] + 1;
-				result = cache[element] + 1;
-				break;
-			}
-		}
 
-		cache[ele] = cacheTmp;
-		return result;
-	}).reverse();
-}
-
-console.log(smaller([1, 1, -1, 0, 0]));
+console.log(smaller([5, 2, 1, 4, 3]));

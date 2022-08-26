@@ -73,13 +73,18 @@ class MineHelper {
 	}
 
 	openHandler(row, column) {
-		if (!this.isCorrectPoint(row, column) || this.map[row][column] != '?') return 0;
+		try {
+			
+			if (!this.isCorrectPoint(row, column) || this.map[row][column] != '?') return 0;
 
-		const result = open(row, column);
+			const result = open(row, column);
 
-		this.map[row][column] = result + '';
+			this.map[row][column] = result + '';
 
-		return result;
+			return result;
+		} catch (error) {
+			return 0;
+		}
 	}
 
 	getAroundByWhere(row, column, where, diff = 1) {
@@ -205,12 +210,48 @@ function solveMine(map, n) {
 	do {
 		let solveCount = 0;
 
+		let tmpMap = mineHelper.getMinesMap();
+
 		mineHelper.map.forEach((row, rowIndex) => {
 			row.forEach((column, colIndex) => {
 				if (column != '?' && column != 'x') {
 					const tmp = mineHelper.solve(rowIndex, colIndex);
-
 					solveCount += tmp;
+				}
+
+				try {
+					// 1-2-2-1
+					if (
+						tmpMap[rowIndex][colIndex] == 1 &&
+						tmpMap[rowIndex][colIndex + 1] == 2 &&
+						tmpMap[rowIndex][colIndex + 2] == 2 &&
+						tmpMap[rowIndex][colIndex + 3] == 1
+					) {
+						mineHelper.openHandler(rowIndex + 1, colIndex - 1);
+						mineHelper.openHandler(rowIndex + 1, colIndex);
+						mineHelper.openHandler(rowIndex + 1, colIndex + 3);
+						mineHelper.openHandler(rowIndex + 1, colIndex + 4);
+						solveCount += 4;
+					}
+				} catch (error) {
+					
+				}
+				try {
+					// 1-2-2-1
+					if (
+						tmpMap[rowIndex][colIndex] == 1 &&
+						tmpMap[rowIndex + 1][colIndex] == 2 &&
+						tmpMap[rowIndex + 2][colIndex] == 2 &&
+						tmpMap[rowIndex + 3][colIndex] == 1
+					) {
+						mineHelper.openHandler(rowIndex - 1, colIndex);
+						mineHelper.openHandler(rowIndex, colIndex);
+						mineHelper.openHandler(rowIndex + 3, colIndex);
+						mineHelper.openHandler(rowIndex + 4, colIndex);
+						solveCount += 4;
+					}
+				} catch (error) {
+					
 				}
 			});
 		});
@@ -304,9 +345,10 @@ function solveMine(map, n) {
 						solveCount++;
 					}
 				})
-			} while (isNext);
 
-			// TODO  排除  1-2-1  1-2-2-1
+				// TODO  排除  1-2-1  1-2-2-1
+
+			} while (isNext);
 		}
 
 		if (!solveCount) {
@@ -324,67 +366,55 @@ function solveMine(map, n) {
 	return result;
 }
 
-var map =
-`? ? ? 0 ? ? ? 0 ? ? ? ? ? 0 0 0 ? ? ? 0 0 0 0 0 0 ? ? ? 0 0
-? ? ? 0 ? ? ? ? ? ? ? ? ? 0 0 0 ? ? ? ? ? 0 0 0 0 ? ? ? 0 0
-0 0 0 ? ? ? ? ? ? ? ? ? 0 0 0 0 0 0 ? ? ? 0 0 0 0 ? ? ? ? 0
-? ? ? ? ? ? ? ? ? ? ? ? ? ? ? 0 0 0 ? ? ? 0 0 0 0 0 ? ? ? 0
-? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? 0 0 0 ? ? ? 0 0 0 0 ? ? ? 0
-? ? ? 0 0 0 ? ? ? 0 0 0 ? ? ? ? 0 0 0 ? ? ? 0 0 0 0 ? ? ? 0
-? ? 0 0 0 0 ? ? ? 0 0 0 ? ? ? ? 0 0 0 ? ? ? 0 0 0 ? ? ? 0 0
-0 0 0 0 0 0 ? ? ? 0 0 0 ? ? ? 0 ? ? ? 0 0 0 ? ? ? ? ? ? 0 0
-0 0 0 0 ? ? ? ? ? 0 0 0 ? ? ? 0 ? ? ? ? ? ? ? ? ? ? ? ? 0 0
-0 0 0 0 ? ? ? 0 0 0 0 0 ? ? ? 0 ? ? ? ? ? ? ? ? ? 0 0 0 ? ?
-0 0 0 0 ? ? ? 0 0 0 0 ? ? ? 0 0 ? ? ? ? ? ? ? ? 0 ? ? ? ? ?
-0 ? ? ? 0 0 0 0 0 0 0 ? ? ? 0 0 ? ? ? ? ? ? ? ? 0 ? ? ? ? ?
-0 ? ? ? ? ? ? ? 0 0 0 ? ? ? 0 0 0 ? ? ? 0 ? ? ? ? ? ? ? 0 0
-0 ? ? ? ? ? ? ? ? ? 0 ? ? ? ? 0 0 ? ? ? ? 0 ? ? ? 0 0 0 0 0
-? ? 0 ? ? ? ? ? ? ? 0 ? ? ? ? 0 0 0 ? ? ? 0 ? ? ? ? 0 0 0 0
-? ? 0 0 0 0 ? ? ? ? 0 ? ? ? ? 0 0 0 ? ? ? 0 0 ? ? ? 0 0 0 0
-? ? 0 0 0 0 ? ? ? 0 0 0 0 ? ? ? 0 0 0 0 0 0 0 ? ? ? ? 0 0 0
-0 0 0 0 0 0 ? ? ? 0 0 0 0 ? ? ? 0 0 0 ? ? ? 0 ? ? ? ? 0 0 0
-0 0 0 0 0 0 0 0 0 0 0 0 0 ? ? ? 0 0 0 ? ? ? 0 ? ? ? ? 0 0 0
-? ? ? ? 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ? ? ? 0 ? ? ? 0 ? ? ?
-? ? ? ? ? ? ? 0 ? ? ? 0 0 ? ? ? ? ? 0 ? ? ? ? ? ? ? 0 ? ? ?
-? ? ? ? ? ? ? 0 ? ? ? ? 0 ? ? ? ? ? 0 0 0 0 ? ? ? 0 0 ? ? ?
-0 0 ? ? ? ? ? 0 ? ? ? ? ? ? ? ? ? ? ? 0 0 0 ? ? ? 0 0 0 0 0
-0 0 ? ? ? ? ? 0 0 ? ? ? ? ? ? ? ? ? ? ? ? 0 0 0 0 0 0 0 0 0
-0 0 0 0 ? ? ? 0 0 0 0 ? ? ? ? ? ? ? ? ? ? ? ? ? 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0 ? ? ? ? ? ? ? 0 0 ? ? ? ? ? ? ? ? 0 0 0 0
-0 0 0 0 0 ? ? ? ? ? ? ? ? ? ? 0 0 ? ? ? ? ? ? ? ? ? ? ? ? ?
-0 0 0 0 0 ? ? ? ? ? ? ? 0 0 0 0 0 ? ? ? ? ? ? ? ? ? ? ? ? ?
-0 0 0 0 0 ? ? ? ? ? ? 0 0 0 0 0 0 ? ? ? ? ? ? ? ? ? ? ? ? ?`
+var map = 
+`0 0 0 0 0 0 0 ? ? ?
+? ? ? ? ? ? 0 ? ? ?
+? ? ? ? ? ? 0 ? ? ?
+? ? ? ? ? ? 0 ? ? ?
+0 0 ? ? ? ? ? ? 0 0
+0 0 ? ? ? ? ? ? ? ?
+0 0 ? ? ? ? ? ? ? ?
+0 0 0 0 ? ? ? ? ? ?
+0 0 0 0 ? ? ? ? ? ?
+0 0 0 ? ? ? ? 0 0 0
+0 0 0 ? ? ? ? 0 0 0
+0 0 0 ? ? ? ? 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+? ? 0 ? ? ? 0 0 0 0
+? ? 0 ? ? ? 0 0 0 0
+? ? ? ? ? ? ? ? ? 0
+? ? ? ? ? ? ? ? ? ?
+? ? ? ? ? ? ? ? ? ?
+0 0 ? ? ? 0 0 ? ? ?
+0 0 ? ? ? ? ? ? ? ?
+0 0 ? ? ? ? ? ? ? ?
+0 0 0 0 0 ? ? ? ? ?`
 
 var result =
-`1 x 1 0 1 1 1 0 1 x 2 x 1 0 0 0 1 x 1 0 0 0 0 0 0 1 1 1 0 0
-1 1 1 0 1 x 2 2 3 2 2 1 1 0 0 0 1 1 2 1 1 0 0 0 0 1 x 1 0 0
-0 0 0 1 2 2 2 x x 2 1 1 0 0 0 0 0 0 1 x 1 0 0 0 0 1 2 2 1 0
-1 1 1 1 x 1 1 2 2 2 x 1 1 1 1 0 0 0 1 1 1 0 0 0 0 0 2 x 2 0
-2 x 1 1 1 1 1 1 1 1 1 1 1 x 2 1 0 0 0 1 1 1 0 0 0 0 2 x 2 0
-x 2 1 0 0 0 1 x 1 0 0 0 2 3 x 1 0 0 0 1 x 1 0 0 0 0 1 1 1 0
-1 1 0 0 0 0 2 2 2 0 0 0 1 x 2 1 0 0 0 1 1 1 0 0 0 1 1 1 0 0
-0 0 0 0 0 0 1 x 1 0 0 0 2 2 2 0 1 1 1 0 0 0 1 1 1 1 x 1 0 0
-0 0 0 0 1 1 2 1 1 0 0 0 1 x 1 0 1 x 1 1 1 2 2 x 1 1 1 1 0 0
-0 0 0 0 1 x 1 0 0 0 0 0 1 1 1 0 2 2 2 2 x 3 x 2 1 0 0 0 1 1
-0 0 0 0 1 1 1 0 0 0 0 1 1 1 0 0 1 x 1 2 x 4 2 2 0 1 1 1 1 x
-0 1 1 1 0 0 0 0 0 0 0 1 x 1 0 0 1 2 2 2 1 2 x 1 0 1 x 1 1 1
-0 1 x 2 1 2 1 1 0 0 0 1 1 1 0 0 0 1 x 1 0 1 2 2 1 1 1 1 0 0
-0 1 1 2 x 2 x 3 2 1 0 1 2 2 1 0 0 1 2 2 1 0 1 x 1 0 0 0 0 0
-1 1 0 1 1 2 2 x x 1 0 1 x x 1 0 0 0 1 x 1 0 1 2 2 1 0 0 0 0
-x 1 0 0 0 0 2 3 3 1 0 1 2 2 1 0 0 0 1 1 1 0 0 2 x 2 0 0 0 0
-1 1 0 0 0 0 1 x 1 0 0 0 0 1 1 1 0 0 0 0 0 0 0 2 x 3 1 0 0 0
-0 0 0 0 0 0 1 1 1 0 0 0 0 1 x 1 0 0 0 1 1 1 0 1 2 x 1 0 0 0
-0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 2 x 2 0 1 2 2 1 0 0 0
-1 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 x 2 0 1 x 1 0 1 1 1
-1 x x 1 1 1 1 0 1 1 1 0 0 1 1 2 1 1 0 1 1 1 1 2 2 1 0 1 x 1
-1 2 3 2 2 x 1 0 1 x 2 1 0 1 x 3 x 2 0 0 0 0 1 x 1 0 0 1 1 1
-0 0 1 x 3 2 2 0 1 2 x 1 1 2 2 3 x 3 1 0 0 0 1 1 1 0 0 0 0 0
-0 0 1 1 2 x 1 0 0 1 1 2 2 x 2 2 2 x 2 1 1 0 0 0 0 0 0 0 0 0
-0 0 0 0 1 1 1 0 0 0 0 1 x 4 x 1 1 1 2 x 1 1 1 1 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0 1 1 2 2 x 2 1 0 0 1 1 1 1 x 2 1 1 0 0 0 0
-0 0 0 0 0 1 1 2 1 2 x 1 1 1 1 0 0 1 2 2 1 1 1 2 x 2 1 1 1 1
-0 0 0 0 0 1 x 4 x 4 2 1 0 0 0 0 0 2 x x 2 2 2 2 3 x 2 1 x 1
-0 0 0 0 0 1 2 x x x 1 0 0 0 0 0 0 2 x 3 2 x x 1 2 x 2 1 1 1`
+`0 0 0 0 0 0 0 1 1 1
+1 1 1 1 1 1 0 2 x 2
+1 x 2 2 x 1 0 2 x 2
+1 1 2 x 2 1 0 1 1 1
+0 0 2 2 2 1 1 1 0 0
+0 0 1 x 1 1 x 2 1 1
+0 0 1 1 2 2 2 3 x 2
+0 0 0 0 1 x 1 2 x 2
+0 0 0 0 1 1 1 1 1 1
+0 0 0 1 2 2 1 0 0 0
+0 0 0 1 x x 1 0 0 0
+0 0 0 1 2 2 1 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+1 1 0 1 1 1 0 0 0 0
+x 1 0 1 x 1 0 0 0 0
+2 3 1 3 2 2 1 1 1 0
+x 2 x 2 x 1 1 x 2 1
+1 2 1 2 1 1 1 2 x 1
+0 0 1 1 1 0 0 1 1 1
+0 0 1 x 1 1 1 2 2 2
+0 0 1 1 1 1 x 2 x x
+0 0 0 0 0 1 1 2 2 2`
 
 
 result = result.split('\n').map(ele => ele.split(' '));
