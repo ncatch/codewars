@@ -27,14 +27,14 @@ function slidePuzzle(arr){
         )
     }
     // 走到目标点
-    const go = function (end, start, pass) {
+    const go = function (end, start, pass, oldStart = start) {
         if (isSamePoint(start, end)) return true;
     
         const points = compliance([
-            [start[0], start[1] - 1],
-            [start[0] + 1, start[1]],
-            [start[0] - 1, start[1]],
             [start[0], start[1] + 1],
+            [start[0] + 1, start[1]],
+            [start[0], start[1] - 1],
+            [start[0] - 1, start[1]],
         ])
 
         let currPoint = null;
@@ -50,9 +50,11 @@ function slidePuzzle(arr){
                 }
             }
         })
-    
+
         if (!currPoint || isSamePoint(start, currPoint)) {
-            return false;
+            // 回溯
+            // return go(end, oldStart, pass, oldStart);
+            return null;
         }
     
         toPoint(currPoint);
@@ -61,7 +63,7 @@ function slidePuzzle(arr){
             return true;
         }
     
-        return go(end, currPoint, [...pass, currPoint]);
+        return go(end, currPoint, [...pass, currPoint], start);
     }
     // 0 到哪个坐标
     const toPoint = function (point) {
@@ -110,99 +112,154 @@ function slidePuzzle(arr){
 
         return false;
     }
-    
+    // 按数字归位
+    const resetByNum = function (num) {
+        let currPoint = getNumPoint(num);
+        const shouldPoint = getNumShouldPoint(num);
+
+        // 位置差
+        const diff = [
+            Math.abs(currPoint[0] - shouldPoint[0]), // r
+            Math.abs(currPoint[1] - shouldPoint[1]), // c
+        ]
+
+        const diffUnit = [
+            currPoint[0] > shouldPoint[0] ? -1 : 1,
+            currPoint[1] > shouldPoint[1] ? -1 : 1
+        ]
+
+        function reset(index) {
+            let count = 0;
+            // 行归位
+            while (diff[index] > 0) {
+                let endPoint;
+
+                if ((diff[0] + diff[1]) == 1) {
+                    if (
+                        !isSamePoint(shouldPoint, emptyPoint) && // 应该在的位置不是0
+                        isImpasse(shouldPoint, num)// 四周只有一个可动数字并且哪个数字是原本它应该在的位置
+                    ) {
+                        if (diff[1] && currPoint[1] < (max - 1)) {
+                            // 在右边
+                            endPoint = [currPoint[0], currPoint[1] + 1]
+                            go(endPoint, emptyPoint, [...pass, currPoint]);
+                                
+                            // 左 左 上 右 下 右 上 左 左 下 右
+                            [
+                                [0, -1],
+                                [0, -1],
+                                [-1, 0],
+                                [0, 1],
+                                [1, 0],
+                                [0, 1],
+                                [-1, 0],
+                                [0, -1],
+                                [0, -1],
+                                [1, 0],
+                                [0, 1],
+                            ].forEach(ele => {
+                                toPoint([emptyPoint[0] + ele[0], emptyPoint[1] + ele[1]])
+                            })
+
+                            count++;
+                            continue;
+                        } else if (diff[0] && currPoint[0] < (max - 1)) {
+                            // 在下面
+                            endPoint = [currPoint[0] + 1, currPoint[1]]
+                            go(endPoint, emptyPoint, [...pass, currPoint]);
+
+                            // 上 上 左 下 右 下 左 上 上 右 下
+                            [
+                                [-1, 0],
+                                [-1, 0],
+                                [0, -1],
+                                [1, 0],
+                                [0, 1],
+                                [1, 0],
+                                [0, -1],
+                                [-1, 0],
+                                [-1, 0],
+                                [0, 1],
+                                [1, 0],
+                            ].forEach(ele => {
+                                toPoint([emptyPoint[0] + ele[0], emptyPoint[1] + ele[1]])
+                            })
+
+                            count++;
+                            continue;
+                        }
+                    }
+                    endPoint = [...shouldPoint];
+                } else {
+                    endPoint = [...currPoint];
+                    endPoint[index] += diffUnit[index];
+                }
+
+                if (pass.find(p => p[0] == endPoint[0] && p[1] == endPoint[1])) break;
+
+                if (go(endPoint, emptyPoint, [...pass, currPoint, emptyPoint])) {
+                    count++;
+                    currPoint = [...endPoint];
+                    endPoint[index] -= diffUnit[index];
+                    toPoint(endPoint);
+                    diff[index]--;
+                } else {
+                    console.log('没有路径');
+                    break;
+                }
+            }
+
+            return count;
+        }
+
+        let next = true;
+
+        do {
+            const num1 = reset(0);
+            const num2 = reset(1);
+
+            next = num1 + num2 > 0;
+        } while (next && (diff[0] + diff[1] > 0));
+
+        pass.push(shouldPoint);
+        return !diff[0] && !diff[1];
+    }
+
     // 路径结果
     const res = [];
     const pass = [];
 
     // 0 所在位置
     let emptyPoint = getNumPoint(0);
-    let c = 0, r = 0;
+    // let c = 0, r = 0;
 
-    // 一列一列归位，最后一列会自动归位
-    for (; c < max; c++) {
-        
-        r = 0;
-        
-        for (; r < max; r++) {
-            const num = r * max + c + 1;
+    // 列排法 一列一列归位，最后一列会自动归位
+    // for (; c < max; c++) {
 
-            // 最后一个数
-            if (num > maxNumber) continue;
+    //     r = 0;
 
-            let currPoint = getNumPoint(num);
-            const shouldPoint = getNumShouldPoint(num);
+    //     for (; r < max; r++) {
+    //         const num = r * max + c + 1;
 
-            // 位置差
-            const diff = [
-                Math.abs(currPoint[0] - shouldPoint[0]), // r
-                Math.abs(currPoint[1] - shouldPoint[1]), // c
-            ]
+    //         // 最后一个数
+    //         if (num > maxNumber) continue;
 
-            const diffUnit = [
-                currPoint[0] > shouldPoint[0] ? -1 : 1,
-                currPoint[1] > shouldPoint[1] ? -1 : 1
-            ]
+    //         resetByNum(num);
+    //     }
+    // }
 
-            function reset(index) {
-                // 行归位
-                while (diff[index] > 0) {
-                    let endPoint;
-
-                    if ((diff[0] + diff[1]) == 1) {
-                        if (
-                            !isSamePoint(shouldPoint, emptyPoint) && // 应该在的位置不是0
-                            isImpasse(shouldPoint, num)// 四周只有一个可动数字并且哪个数字是原本它应该在的位置
-                        ) {
-                            if (currPoint[1] < (max - 2)) {
-                                endPoint = [currPoint[0], currPoint[1] + 1]
-                                go(endPoint, emptyPoint, [...pass, currPoint]);
-
-                                // 左 左 上 右 下 右 上 左 左 下 右
-                                [
-                                    [0, -1],
-                                    [0, -1],
-                                    [-1, 0],
-                                    [0, 1],
-                                    [1, 0],
-                                    [0, 1],
-                                    [-1, 0],
-                                    [0, -1],
-                                    [0, -1],
-                                    [1, 0],
-                                    [0, 1],
-                                ].forEach(ele => {
-                                    toPoint([emptyPoint[0] + ele[0], emptyPoint[1] + ele[1]])
-                                })
-
-                                continue;
-                            } else {
-
-                            }
-                        }
-                        endPoint = [...shouldPoint];
-                    } else {
-                        endPoint = [...currPoint];
-                        endPoint[index] += diffUnit[index];
-                    }
-
-                    if (pass.find(p => p[0] == endPoint[0] && p[1] == endPoint[1])) break;
-
-                    if (go(endPoint, emptyPoint, [...pass, currPoint, emptyPoint])) {
-                        currPoint = [...endPoint];
-                        endPoint[index] -= diffUnit[index];
-                        toPoint(endPoint);
-                        diff[index]--;
-                    } else {
-                        console.log('没有路径');
-                    }
-                }
+    for (let i = 0; i < arr.length - 1; i++) {
+        for (let c = i; c < arr.length; c++) {
+            const tmp = resetByNum(i * max + c + 1);
+            if (!tmp) {
+                return null;
             }
-
-            reset(0);
-            reset(1);
-
-            pass.push(shouldPoint);
+        }
+        for (let r = i; r < arr.length; r++) {
+            const tmp = resetByNum(r * max + i + 1);
+            if (!tmp) {
+                return null;
+            }
         }
     }
 
@@ -210,10 +267,10 @@ function slidePuzzle(arr){
 }
 
 slidePuzzle([
-    [ 10, 3, 6, 4 ],
-    [ 1,  5, 8, 0 ],
-    [ 2,  13,7, 15 ],
-    [ 14, 9, 12,11 ]
+    [10, 3, 6, 4],
+	[ 1, 5, 8, 0],
+	[ 2,13, 7,15],
+	[14, 9,12,11]
 ])
 
 /**
