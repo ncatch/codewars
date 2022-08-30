@@ -1,5 +1,6 @@
 // https://www.codewars.com/kata/5a20eeccee1aae3cbc000090/train/javascript
 // https://jingyan.baidu.com/article/6dad5075a92348e023e36e9f.html
+// 已解决
 
 // 获取两点的距离
 function getDistance(pointA, pointB) {
